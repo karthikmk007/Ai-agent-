@@ -1,38 +1,198 @@
-.App {
-    text-align: center;
+/* Custom animations for Among Us characters */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+@keyframes steam {
+  0% { opacity: 0.8; transform: translateY(0px) scale(1); }
+  100% { opacity: 0; transform: translateY(-20px) scale(1.5); }
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.character-float {
+  animation: float 3s ease-in-out infinite;
 }
 
-.App-link {
-    color: #61dafb;
+.character-bounce {
+  animation: bounce-slow 1s ease-in-out infinite;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.steam-particle {
+  animation: steam 2s ease-out infinite;
+}
+
+/* Among Us character hover effects */
+.character-container:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Priority badges */
+.priority-emergency {
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.priority-work {
+  box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+}
+
+.priority-health {
+  box-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+}
+
+/* Queue item animations */
+.queue-item {
+  transition: all 0.3s ease-in-out;
+}
+
+.queue-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Emergency alert styles */
+.emergency-alert {
+  animation: shake 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(2px); }
+}
+
+/* Toilet paper roll animation */
+@keyframes roll {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.toilet-paper-roll {
+  animation: roll 10s linear infinite;
+}
+
+/* Sparkle effects for completed actions */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.sparkle {
+  animation: sparkle 1s ease-in-out infinite;
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.toilet-gradient {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+/* Button hover effects */
+.btn-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Character color glow effects */
+.character-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+.character-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+.character-green { box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
+.character-yellow { box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+.character-orange { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4); }
+.character-purple { box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+.character-pink { box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
+.character-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+
+/* Loading animations */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .character-large {
+    transform: scale(0.8);
+  }
+  
+  .queue-item {
+    padding: 0.5rem;
+  }
+  
+  .priority-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Accessibility improvements */
+.focus-ring:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .character-container {
+    border: 2px solid currentColor;
+  }
+  
+  .priority-badge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .character-float,
+  .character-bounce,
+  .steam-particle,
+  .emergency-alert {
+    animation: none;
+  }
+  
+  .queue-item,
+  .btn-primary,
+  .character-container {
+    transition: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .bg-white {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .bg-gray-50 {
+    background-color: #374151;
+  }
+  
+  .border {
+    border-color: #4b5563;
+  }
 }
