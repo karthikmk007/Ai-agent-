@@ -31,7 +31,12 @@ def create_user(name=None, color=None):
             if available_colors:
                 color = random.choice(available_colors)
             else:
-                raise Exception("No available colors")
+                # If all colors are taken, delete an existing user to free up a color
+                if existing_users:
+                    requests.delete(f"{BACKEND_URL}/users/{existing_users[0]['id']}")
+                    color = existing_users[0]['color']
+                else:
+                    color = random.choice(COLORS)
         else:
             color = random.choice(COLORS)
     
