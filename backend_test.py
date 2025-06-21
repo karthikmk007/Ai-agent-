@@ -14,6 +14,7 @@ class BathroomQueueAPITest(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures before each test method"""
+        # Initialize lists to store created resources
         self.users = []  # Store created users for cleanup
         self.queue_items = []  # Store created queue items for cleanup
         self.utility_items = []  # Store created utility items for cleanup
