@@ -89,10 +89,22 @@ class BathroomQueueAPITest(unittest.TestCase):
         """Test user management API endpoints"""
         print("\n--- Testing User Management API ---")
         
+        # Get existing users to avoid color conflicts
+        response = requests.get(f"{BACKEND_URL}/users")
+        existing_users = response.json() if response.status_code == 200 else []
+        used_colors = [user["color"] for user in existing_users]
+        
+        # Find an available color for our first test user
+        available_colors = [c for c in self.colors if c not in used_colors]
+        if not available_colors:
+            self.fail("No available colors for testing")
+        
+        test_color = available_colors[0]
+        
         # Test creating a user
-        user = self.create_user(name="John Doe", color="red")
+        user = self.create_user(name="John Doe", color=test_color)
         self.assertEqual(user["name"], "John Doe")
-        self.assertEqual(user["color"], "red")
+        self.assertEqual(user["color"], test_color)
         
         # Test getting all users
         response = requests.get(f"{BACKEND_URL}/users")
@@ -101,15 +113,23 @@ class BathroomQueueAPITest(unittest.TestCase):
         self.assertGreaterEqual(len(users), 1)
         
         # Test color uniqueness validation
-        data = {"name": "Jane Doe", "color": "red"}
+        data = {"name": "Jane Doe", "color": test_color}
         response = requests.post(f"{BACKEND_URL}/users", json=data)
         self.assertEqual(response.status_code, 400)
         self.assertIn("Color already taken", response.json()["detail"])
         
+        # Find another available color
+        used_colors.append(test_color)
+        available_colors = [c for c in self.colors if c not in used_colors]
+        if not available_colors:
+            self.fail("No more available colors for testing")
+        
+        test_color2 = available_colors[0]
+        
         # Test creating a user with a different color
-        user2 = self.create_user(name="Jane Doe", color="blue")
+        user2 = self.create_user(name="Jane Doe", color=test_color2)
         self.assertEqual(user2["name"], "Jane Doe")
-        self.assertEqual(user2["color"], "blue")
+        self.assertEqual(user2["color"], test_color2)
         
         # Test deleting a user
         response = requests.delete(f"{BACKEND_URL}/users/{user['id']}")
