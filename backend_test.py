@@ -31,6 +31,14 @@ class BathroomQueueAPITest(unittest.TestCase):
 
     def cleanup(self):
         """Clean up all created resources"""
+        # Initialize instance variables
+        if not hasattr(self, 'users'):
+            self.users = []
+        if not hasattr(self, 'queue_items'):
+            self.queue_items = []
+        if not hasattr(self, 'utility_items'):
+            self.utility_items = []
+            
         # Clean up queue items
         response = requests.get(f"{BACKEND_URL}/queue")
         if response.status_code == 200:
