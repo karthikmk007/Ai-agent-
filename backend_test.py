@@ -146,10 +146,20 @@ class BathroomQueueAPITest(unittest.TestCase):
         """Test priority queue system API endpoints"""
         print("\n--- Testing Priority Queue System API ---")
         
-        # Create test users
-        user1 = self.create_user(name="User 1", color="red")
-        user2 = self.create_user(name="User 2", color="blue")
-        user3 = self.create_user(name="User 3", color="green")
+        # Get existing users to avoid color conflicts
+        response = requests.get(f"{BACKEND_URL}/users")
+        existing_users = response.json() if response.status_code == 200 else []
+        used_colors = [user["color"] for user in existing_users]
+        
+        # Find available colors
+        available_colors = [c for c in self.colors if c not in used_colors]
+        if len(available_colors) < 3:
+            self.fail("Not enough available colors for testing")
+        
+        # Create test users with unique colors
+        user1 = self.create_user(name="User 1", color=available_colors[0])
+        user2 = self.create_user(name="User 2", color=available_colors[1])
+        user3 = self.create_user(name="User 3", color=available_colors[2])
         
         # Test joining queue with different priorities
         # Health (lowest priority)
@@ -177,15 +187,33 @@ class BathroomQueueAPITest(unittest.TestCase):
         response = requests.get(f"{BACKEND_URL}/queue")
         self.assertEqual(response.status_code, 200)
         queue = response.json()
-        self.assertEqual(len(queue), 3)
+        
+        # Filter only our test users from the queue
+        test_user_ids = [user1["id"], user2["id"], user3["id"]]
+        our_queue_items = [item for item in queue if item["user_id"] in test_user_ids]
+        self.assertEqual(len(our_queue_items), 3)
         
         # Verify queue order: Emergency > Work > Health
-        self.assertEqual(queue[0]["priority"], "emergency")
-        self.assertEqual(queue[1]["priority"], "work")
-        self.assertEqual(queue[2]["priority"], "health")
+        # Find our items in the queue
+        emergency_item = next((item for item in our_queue_items if item["priority"] == "emergency"), None)
+        work_item = next((item for item in our_queue_items if item["priority"] == "work"), None)
+        health_item = next((item for item in our_queue_items if item["priority"] == "health"), None)
+        
+        self.assertIsNotNone(emergency_item)
+        self.assertIsNotNone(work_item)
+        self.assertIsNotNone(health_item)
+        
+        # Get the indices of our items in the queue
+        emergency_index = queue.index(emergency_item)
+        work_index = queue.index(work_item)
+        health_index = queue.index(health_item)
+        
+        # Verify priority order
+        self.assertLess(emergency_index, work_index)
+        self.assertLess(work_index, health_index)
         
         # Test starting bathroom use (emergency should go first)
-        response = requests.post(f"{BACKEND_URL}/queue/{queue[0]['id']}/start")
+        response = requests.post(f"{BACKEND_URL}/queue/{emergency_item['id']}/start")
         self.assertEqual(response.status_code, 200)
         
         # Test getting current user
@@ -196,7 +224,7 @@ class BathroomQueueAPITest(unittest.TestCase):
         self.assertEqual(current_user["status"], "using")
         
         # Test that another user can't start using bathroom while it's occupied
-        response = requests.post(f"{BACKEND_URL}/queue/{queue[1]['id']}/start")
+        response = requests.post(f"{BACKEND_URL}/queue/{work_item['id']}/start")
         self.assertEqual(response.status_code, 400)
         self.assertIn("already occupied", response.json()["detail"])
         
@@ -208,18 +236,21 @@ class BathroomQueueAPITest(unittest.TestCase):
         response = requests.get(f"{BACKEND_URL}/queue/completed")
         self.assertEqual(response.status_code, 200)
         completed_queue = response.json()
-        self.assertEqual(len(completed_queue), 1)
-        self.assertEqual(completed_queue[0]["user_id"], user3["id"])
+        
+        # Find our completed item
+        our_completed_item = next((item for item in completed_queue if item["user_id"] == user3["id"]), None)
+        self.assertIsNotNone(our_completed_item)
         
         # Test removing from queue
-        response = requests.delete(f"{BACKEND_URL}/queue/{queue[1]['id']}")
+        response = requests.delete(f"{BACKEND_URL}/queue/{work_item['id']}")
         self.assertEqual(response.status_code, 200)
         
-        # Verify queue length after removal
+        # Verify our item was removed
         response = requests.get(f"{BACKEND_URL}/queue")
         self.assertEqual(response.status_code, 200)
         queue = response.json()
-        self.assertEqual(len(queue), 1)  # Only health priority user should remain
+        work_item_still_exists = any(item["id"] == work_item["id"] for item in queue)
+        self.assertFalse(work_item_still_exists)
         
         print("✅ Priority Queue System API tests passed")
 
