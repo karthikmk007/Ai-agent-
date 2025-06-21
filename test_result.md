@@ -299,3 +299,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Built complete bathroom queue app with Among Us characters, priority system (Emergency > Work > Health), hygiene ratings, and utilities tracking. Ready for backend testing to verify all API endpoints work correctly."
+  - agent: "testing"
+    message: "Completed comprehensive testing of all backend APIs. Created and executed tests for User Management, Priority Queue System, Bathroom State Management, Emergency Alert System, Hygiene Rating System, and Utilities Tracking APIs. All tests passed successfully. The priority queue system correctly orders users by priority level (Emergency > Work > Health) and then by time. Validation rules for color uniqueness, bathroom occupancy, and rating values are working as expected."
