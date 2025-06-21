@@ -48,6 +48,11 @@ class BathroomQueueAPITest(unittest.TestCase):
             users = response.json()
             for user in users:
                 requests.delete(f"{BACKEND_URL}/users/{user['id']}")
+                
+        # Reset instance variables
+        self.users = []
+        self.queue_items = []
+        self.utility_items = []
 
     def random_string(self, length=8):
         """Generate a random string of fixed length"""
