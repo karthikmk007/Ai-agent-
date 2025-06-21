@@ -11,6 +11,9 @@ BACKEND_URL = "https://b725bc71-f9ef-471f-b445-b9b06a82ba7b.preview.emergentagen
 
 class BathroomQueueAPITest(unittest.TestCase):
     """Test suite for the Bathroom Queue API"""
+    
+    # Define colors as a class attribute
+    colors = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]
 
     def setUp(self):
         """Set up test fixtures before each test method"""
@@ -18,7 +21,6 @@ class BathroomQueueAPITest(unittest.TestCase):
         self.users = []  # Store created users for cleanup
         self.queue_items = []  # Store created queue items for cleanup
         self.utility_items = []  # Store created utility items for cleanup
-        self.colors = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]
         
         # Clean up any existing data
         self.cleanup()
